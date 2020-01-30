@@ -1,0 +1,3 @@
+C:\Users\iseza\source\repos\design.automation-nodejs-coil-creation\design.automation-nodejs-coil-creation\obj\Debug\design.automation-nodejs-coil-creation.njsprojAssemblyReference.cache
+C:\Users\iseza\source\repos\design.automation-nodejs-coil-creation\design.automation-nodejs-coil-creation\obj\Debug\design.automation-nodejs-coil-creation.njsproj.CoreCompileInputs.cache
+C:\Users\iseza\source\repos\design.automation-nodejs-coil-creation\design.automation-nodejs-coil-creation\bin\Microsoft.NodejsTools.WebRole.dll

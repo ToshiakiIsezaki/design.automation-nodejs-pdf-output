@@ -1,0 +1,158 @@
+﻿<!--
+////////////////////////////////////////////////////////////////////////////////
+// Copyright (c) Autodesk, Inc. All rights reserved
+// Written by Toshiaki Isezaki 2019 - Forge Partner Development
+//
+// Permission to use, copy, modify, and distribute this software in
+// object code form for any purpose and without fee is hereby granted,
+// provided that the above copyright notice appears in all copies and
+// that both that copyright notice and the limited warranty and
+// restricted rights notice below appear in all supporting
+// documentation.
+//
+// AUTODESK PROVIDES THIS PROGRAM "AS IS" AND WITH ALL FAULTS.
+// AUTODESK SPECIFICALLY DISCLAIMS ANY IMPLIED WARRANTY OF
+// MERCHANTABILITY OR FITNESS FOR A PARTICULAR USE.  AUTODESK, INC.
+// DOES NOT WARRANT THAT THE OPERATION OF THE PROGRAM WILL BE
+// UNINTERRUPTED OR ERROR FREE.
+////////////////////////////////////////////////////////////////////////////////
+-->
+<html>
+<head>
+    <title>DA4A coil creation</title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="https://developer.api.autodesk.com/modelderivative/v2/viewers/7.*/style.min.css" type="text/css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <script src="https://developer.api.autodesk.com/modelderivative/v2/viewers/7.*/viewer3D.min.js"></script>
+    <script type="text/javascript" src="/index.js"></script>
+    <style>
+
+        .ellipse_view {
+            position: absolute;
+            border-style: initial;
+            border-radius: 50%;
+            width: 94%;
+            height: 92%;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .img-responsive-overwrite {
+            margin: 0 auto;
+        }
+
+        #loaders {
+            opacity: 1;
+            position: absolute;
+            z-index: 999;
+            top: 41%;
+            left: 45%;
+        }
+
+        .lds-ring {
+            display: inline-block;
+            position: absolute;
+            width: 64px;
+            height: 64px;
+        }
+
+            .lds-ring div {
+                box-sizing: border-box;
+                display: block;
+                position: absolute;
+                width: 51px;
+                height: 51px;
+                margin: 6px;
+                border: 6px solid #fff;
+                border-radius: 50%;
+                animation: lds-ring 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+                border-color: #fff transparent transparent transparent;
+            }
+
+                .lds-ring div:nth-child(1) {
+                    animation-delay: -0.45s;
+                }
+                .lds-ring div:nth-child(2) {
+                    animation-delay: -0.3s;
+                }
+                .lds-ring div:nth-child(3) {
+                    animation-delay: -0.15s;
+                }
+
+        @keyframes lds-ring {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+    </style>
+</head>
+<body onload="onViewModel()">
+    <div class="container mx-auto d-block">
+        <div class="row">
+            <div class="col-lg-8 my-2" style="height: 750px">
+                <div class="lds-ring" id="loaders" style="visibility:hidden"><div></div><div></div><div></div><div></div></div>
+                <div class="ellipse_view" id="viewer3d"></div>
+            </div>
+            <div class="ml-3 my-3">
+                <label>turn(旋回数):</label>
+                <input type="number" class="form-control col-lg-11" id="turn" value="5">
+                <label>radius(半径):</label>
+                <input type="number" class="form-control col-lg-11" id="radius" value="50">
+                <label>height(高さ):</label>
+                <input type="number" class="form-control col-lg-11" id="height" value="100">
+                <div class="row my-3">
+                    <button type="button" class="btn btn-primary ml-3" id="start">Submit</button>
+                    <button type="button" class="btn btn-success ml-2" disabled="disabled" id="download">Download</button>
+                </div>
+                <div>
+                    <div class="row my-2">
+                        <img class="ml-3" src="/images/authentication-api-blue.png" />
+                        <img class="ml-3 my-3" id="OA" style="visibility:hidden" src="/images/direction-arrow-icon-gray.png" />
+                    </div>
+                    <div class="row my-3">
+                        <div class="ml-3"><img src="/images/design-automation-api-blue.png" /></div>
+                        <img class="ml-3 my-3" id="DA" style="visibility:hidden" src="/images/direction-arrow-icon-gray.png" />
+                    </div>
+                    <div class="row my-3">
+                        <div class="ml-3"><img src="/images/data-management-api-blue.png" /></div>
+                        <img class="ml-3 my-3" id="DM" style="visibility:hidden" src="/images/direction-arrow-icon-gray.png" />
+                    </div>
+                    <div class="row my-3">
+                        <div class="ml-3"><img src="/images/model-derivative-api-blue.png" /></div>
+                        <img class="ml-3 my-3" id="MD" style="visibility:hidden" src="/images/direction-arrow-icon-gray.png" />
+                    </div>
+                    <div class="row my-3">
+                        <div class="ml-3"><img src="/images/viewer-api-blue.png" /></div>
+                        <img class="ml-3 my-3" id="VR" src="/images/direction-arrow-icon-gray.png" />
+                    </div>
+                </div>
+            </div>
+            <div class="container mx-auto d-block">
+                <div class="row my-3">
+                    <button type="button" class="btn btn-warning btn-outline-danger ml-5" id="delappbundle">Delete AppBundle</button>
+                </div>
+                <div class="row my-3">
+                    <form id="data-form" class="ml-5" method="POST" action="/appbundle-upload">
+                        <button type="button" class="btn btn-warning btn-outline-danger" id="regiappbundle">Register AppBundle</button>
+                        <input id="form-file" type="file" name="file" />
+                    </form>
+                </div>
+                <div class="row my-3">
+                    <button type="button" class="btn btn-warning btn-outline-danger ml-5" id="delactivity">Delete Activity</button>
+                </div>
+                <div class="row my-3">
+                    <button type="button" class="btn btn-warning btn-outline-danger ml-5" id="regiactivity">Register Activity</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
