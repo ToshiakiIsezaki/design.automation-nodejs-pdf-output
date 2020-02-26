@@ -473,15 +473,17 @@ router.get('/translation-status', function (req, res) {
 
 });
 
-// Upload Template drawing
+// Upload Source drawing
 router.post("/template-upload", upload.single("file"), function (req, res) {
 
     FILE_NAME = req.file.originalname;
     FILE_PATH = req.file.path;
     console.log(FILE_NAME);
+    SOURCE_DWG = FILE_NAME,
+
     oAuth2TwoLegged.authenticate().then(function (credentials) {
 
-        console.log("**** Upload Template drawing");
+        console.log("**** Upload Source drawing");
 
         createBucketIfNotExist(BUCKET_KEY).then(function (createBucketRes) {
 
@@ -716,6 +718,15 @@ router.get("/register-activity", function (req, res) {
 
         console.log("**** Create Activity");
 
+        var strScript = '"';
+        strScript = strScript & "_tilemode 0 -export _pdf _all(getvar ";
+        strScript = strScript & '"';
+        strScript = strScript & "DWGNAME";
+        strScript = strScript & '"';
+        strScript = strScript & ").pdf\n";
+        strScript = strScript & '"';
+        console.log(strScript);
+
         // Create Activity
         var payload =
         {
@@ -743,7 +754,7 @@ router.get("/register-activity", function (req, res) {
                     "value": "_tilemode 0 -export _pdf _all result.pdf\n"
                 }
             },
-            "engine": "Autodesk.AutoCAD+22",
+            "engine": "Autodesk.AutoCAD+23",
             "appbundles": [],
             "description": "PDF output"
         };
