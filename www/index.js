@@ -67,8 +67,8 @@ function initializeViewer(urn) {
         });
 
         _viewer.loadDocumentNode(viewerDocument, viewables[0]).then(i => {
-            _viewer.setTheme("light-theme");
-            _viewer.setSwapBlackAndWhite(true);
+            //_viewer.setTheme("light-theme");
+            //_viewer.setSwapBlackAndWhite(true);
             _viewer.setLightPreset(2);
             _viewer.disableHighlight();
             apiStatus("VR");
@@ -109,144 +109,11 @@ function replaceSpinner() {
     spinner.innerHTML = '<div></div>';
 }
 
-// Submit button
+// Upload button
 $(document).on("click", "[id^='start']", function () {
 
-    $("#start").prop("disabled", true);
-    $("#download").prop("disabled", true);
-
-    // Triger process
-    apiStatus("DA");
-    $("#loaders").css('visibility', 'visible');
-    var uri = '/api/process/';
-    $.ajax({
-        url: uri,
-        type: 'POST',
-        contentType: 'text/plain'
-    }).done(function (res) {
-
-        var workitemId = res;
-
-        // Set timer to repeat getting WorkItem status
-        var startTime = new Date().getTime();
-        var timeout = 1000 * 60 * 5; // 5 minutes
-        var timer = setInterval(function () {
-            var dt = (new Date().getTime() - startTime) / timeout;
-            if (dt >= 1.0) {
-                clearInterval(timer);
-            } else {
-
-                // Check Process Status
-                var uri = '/api/process-status/' + workitemId;
-                $.ajax({
-                    url: uri,
-                    type: 'GET',
-                    contentType: 'text/plain'
-                }).done(function (res) {
-
-                    if (res) {
-                        var status = JSON.parse(res).status;
-                        console.log("Process status:" + status);
-                        if (status === 'success') {
-                            console.log("Design Automation Process Report >> " + JSON.parse(res).reportUrl);
-                            $("#start").prop("disabled", false);
-                            $("#download").prop("disabled", false);
-                            clearInterval(timer);
-
-                            // Start Translation
-                            apiStatus("MD");
-                            uri = '/api/start-translation/';
-                            $.ajax({
-                                url: uri,
-                                type: 'GET',
-                                dataType: 'json',
-                                beforeSend: function (xhr) {
-                                },
-                                success: function (res) {
-                                    if (res) {
-
-                                        // Viewable drawing
-                                        var urn = JSON.parse(JSON.stringify(res)).urn;
-
-                                        // Set timer to repeat getting manifest
-                                        var startTime = new Date().getTime();
-                                        var timeout = 1000 * 60 * 5; // 5 minutes
-                                        var timer = setInterval(function () {
-                                            var dt = (new Date().getTime() - startTime) / timeout;
-                                            if (dt >= 1.0) {
-                                                clearInterval(timer);
-                                            }
-                                            else {
-                                                // Check Translation Status
-                                                var uri = '/api/translation-status/';
-                                                $.ajax({
-                                                    url: uri,
-                                                    type: 'GET',
-                                                    dataType: 'json',
-                                                    beforeSend: function (xhr) {
-                                                        //$("#progress").progressbar("option", "value", 0);
-                                                    },
-                                                    success: function (res) {
-                                                        if (res) {
-                                                            var data = JSON.stringify(res);
-                                                            var status = JSON.parse(data).status;
-                                                            var progress = JSON.parse(data).progress;
-                                                            console.log(status + ' ' + progress);
-                                                            if (progress === 'complete') {
-                                                                clearInterval(timer);
-                                                                initializeViewer(urn);
-                                                                apiStatus("");
-                                                                $("#loaders").css('visibility', 'hidden');
-                                                            }
-                                                        }
-                                                    },
-                                                    error: function (res) {
-                                                        console.log('error:' + res.error[0]);
-                                                    }
-
-                                                });
-
-                                            }
-                                        }, 2000);
-
-                                    }
-                                },
-                                error: function (res) {
-                                    console.log('error:' + res);
-                                }
-                            });
-
-                        } else if (status === 'failedInstructions' ||
-                            status === 'failedLimitDataSize' ||
-                            status === 'failedLimitProcessingTime' ||
-                            status === 'failedDownload' ||
-                            status === 'failedUpload') {
-                            clearInterval(timer);
-                            apiStatus("");
-                            $("#loaders").css('visibility', 'hidden');
-                            alert("Failed to PDFoutput process");
-                            console.log("Design Automation Process Report >> " + JSON.parse(res).reportUrl);
-                       }
-                    }
-
-                }).fail(function (jqXHR, textStatus, errorThrown) {
-                    clearInterval(timer);
-                    apiStatus("");
-                    $("#loaders").css('visibility', 'hidden');
-                    alert("Failed to PDFoutput process");
-                    console.log('Failed : ', jqXHR, textStatus, errorThrown);
-                    console.log("Design Automation Process Report >> " + JSON.parse(res).reportUrl);
-                });
-
-            }
-
-        }, 2000);
-
-    }).fail(function (jqXHR, textStatus, errorThrown) {
-        $("#loaders").css('visibility', 'hidden');
-        alert("Failed to CoilCreation process");
-        console.log('Failed : ', jqXHR, textStatus, errorThrown);
-    });
+    // Open File dialog
+    $("#form-file-template").click();
 
 });
 
@@ -275,124 +142,179 @@ $(document).on("click", "[id^='download']", function () {
 
 });
 
-// Upload Source button
-$(document).on("click", "[id^='uploadtemplate']", function () {
+// Process start after file selection
+$(document).on("change", "[id^='data-form-template']", function () {
 
+    // File upload
     if ($('#form-file-template').val().length === 0) {
-        alert("Source drawing isn't selected\nSelect Source drawing first\nNote that file name must be source.dwg");
         return;
     }
 
-    var yesno = window.confirm("Are you sure to upload Source drawing?");
-    if (yesno) {
+    $("#start").prop("disabled", true);
+    $("#download").prop("disabled", true);
 
+    apiStatus("DM");
+    $("#loaders").css('visibility', 'visible');
+
+    var form = $('#data-form-template').get()[0];
+
+    var formData = new FormData(form);
+
+    var uri = '/api/template-upload';
+    $.ajax({
+        url: uri,
+        type: 'POST',
+        data: formData,
+        processData: false,
+        contentType: false
+    }).done(function (res) {
+        $("#start").prop("disabled", false);
+        console.log("Source drawing was loaded");
+        // Process start
         $("#start").prop("disabled", true);
         $("#download").prop("disabled", true);
 
+        // Triger process
         apiStatus("DA");
         $("#loaders").css('visibility', 'visible');
-
-        var form = $('#data-form-template').get()[0];
-
-        var formData = new FormData(form);
-
-        var uri = '/api/template-upload';
+        uri = '/api/process/';
         $.ajax({
             url: uri,
             type: 'POST',
-            data: formData,
-            processData: false,
-            contentType: false
+            contentType: 'text/plain'
         }).done(function (res) {
-            apiStatus("VR");
-            $("#loaders").css('visibility', 'hidden');
-            $("#start").prop("disabled", false);
-            alert("Source drawing was loaded");
+
+            var workitemId = res;
+
+            // Set timer to repeat getting WorkItem status
+            var startTime = new Date().getTime();
+            var timeout = 1000 * 60 * 5; // 5 minutes
+            var timer = setInterval(function () {
+                var dt = (new Date().getTime() - startTime) / timeout;
+                if (dt >= 1.0) {
+                    clearInterval(timer);
+                } else {
+
+                    // Check Process Status
+                    var uri = '/api/process-status/' + workitemId;
+                    $.ajax({
+                        url: uri,
+                        type: 'GET',
+                        contentType: 'text/plain'
+                    }).done(function (res) {
+
+                        if (res) {
+                            var status = JSON.parse(res).status;
+                            console.log("Process status:" + status);
+                            if (status === 'success') {
+                                console.log("Design Automation Process Report >> " + JSON.parse(res).reportUrl);
+                                $("#start").prop("disabled", false);
+                                $("#download").prop("disabled", false);
+                                clearInterval(timer);
+
+                                // Start Translation
+                                apiStatus("MD");
+                                uri = '/api/start-translation/';
+                                $.ajax({
+                                    url: uri,
+                                    type: 'GET',
+                                    dataType: 'json',
+                                    beforeSend: function (xhr) {
+                                    },
+                                    success: function (res) {
+                                        if (res) {
+
+                                            // Viewable drawing
+                                            var urn = JSON.parse(JSON.stringify(res)).urn;
+
+                                            // Set timer to repeat getting manifest
+                                            var startTime = new Date().getTime();
+                                            var timeout = 1000 * 60 * 5; // 5 minutes
+                                            var timer = setInterval(function () {
+                                                var dt = (new Date().getTime() - startTime) / timeout;
+                                                if (dt >= 1.0) {
+                                                    clearInterval(timer);
+                                                }
+                                                else {
+                                                    // Check Translation Status
+                                                    var uri = '/api/translation-status/';
+                                                    $.ajax({
+                                                        url: uri,
+                                                        type: 'GET',
+                                                        dataType: 'json',
+                                                        beforeSend: function (xhr) {
+                                                            //$("#progress").progressbar("option", "value", 0);
+                                                        },
+                                                        success: function (res) {
+                                                            if (res) {
+                                                                var data = JSON.stringify(res);
+                                                                var status = JSON.parse(data).status;
+                                                                var progress = JSON.parse(data).progress;
+                                                                console.log(status + ' ' + progress);
+                                                                if (progress === 'complete') {
+                                                                    clearInterval(timer);
+                                                                    initializeViewer(urn);
+                                                                    apiStatus("");
+                                                                    $("#loaders").css('visibility', 'hidden');
+                                                                }
+                                                            }
+                                                        },
+                                                        error: function (res) {
+                                                            console.log('error:' + res.error[0]);
+                                                        }
+
+                                                    });
+
+                                                }
+                                            }, 2000);
+
+                                        }
+                                    },
+                                    error: function (res) {
+                                        console.log('error:' + res);
+                                    }
+                                });
+
+                            } else if (status === 'failedInstructions' ||
+                                status === 'failedLimitDataSize' ||
+                                status === 'failedLimitProcessingTime' ||
+                                status === 'failedDownload' ||
+                                status === 'failedUpload') {
+                                clearInterval(timer);
+                                apiStatus("");
+                                $("#loaders").css('visibility', 'hidden');
+                                alert("Failed to PDFoutput process");
+                                console.log("Design Automation Process Report >> " + JSON.parse(res).reportUrl);
+                            }
+                        }
+
+                    }).fail(function (jqXHR, textStatus, errorThrown) {
+                        clearInterval(timer);
+                        apiStatus("");
+                        $("#loaders").css('visibility', 'hidden');
+                        alert("Failed to PDFoutput process");
+                        console.log('Failed : ', jqXHR, textStatus, errorThrown);
+                        console.log("Design Automation Process Report >> " + JSON.parse(res).reportUrl);
+                    });
+
+                }
+
+            }, 2000);
+
         }).fail(function (jqXHR, textStatus, errorThrown) {
-            apiStatus("");
             $("#loaders").css('visibility', 'hidden');
-            alert("Failed to upload Source drawing : " + errorThrown);
+            alert("Failed to CoilCreation process");
+            console.log('Failed : ', jqXHR, textStatus, errorThrown);
         });
 
-        formData.delete("file");
-
-    }
-
-});
-
-// Delete AppBundle button
-$(document).on("click", "[id^='delappbundle']", function () {
-
-    var yesno = window.confirm("Are you sure to delete AppBundle?\nWorkItem stops working.");
-    if (yesno) {
-
-        $("#start").prop("disabled", true);
-        $("#download").prop("disabled", true);
-
-        apiStatus("DA");
-        $("#loaders").css('visibility', 'visible');
-
-        var uri = '/api/delete-appbundle';
-        $.ajax({
-            url: uri,
-            type: 'GET',
-            contentType: 'application/json'
-        }).done(function (res) {
-            apiStatus("VR");
-            $("#loaders").css('visibility', 'hidden');
-            alert("AppBundle was deleted");
         }).fail(function (jqXHR, textStatus, errorThrown) {
-            apiStatus("");
-            $("#loaders").css('visibility', 'hidden');
-            alert("Failed to delete AppBundle : " + errorThrown);
-        });
-
-    }
-
-});
-
-// Register AppBundle button
-$(document).on("click", "[id^='regiappbundle']", function () {
-
-    if ($('#form-file-appbundle').val().length === 0) {
-        alert("Zipped package bundle isn't selected\nSelect zipped package bundle first");
+        apiStatus("");
+        $("#loaders").css('visibility', 'hidden');
+        alert("Failed to upload Source drawing : " + errorThrown);
         return;
-    }
+    });
 
-    var yesno = window.confirm("Are you sure to register AppBundle?");
-    if (yesno) {
-
-        $("#start").prop("disabled", true);
-        $("#download").prop("disabled", true);
-
-        apiStatus("DA");
-        $("#loaders").css('visibility', 'visible');
-
-        var form = $('#data-form-appbundle').get()[0];
-        
-        var formData = new FormData(form);
-
-        var uri = '/api/appbundle-upload';
-        $.ajax({
-            url: uri,
-            type: 'POST',
-            data: formData,
-            processData: false,
-            contentType: false
-        }).done(function (res) {
-            apiStatus("VR");
-            $("#loaders").css('visibility', 'hidden');
-            $("#start").prop("disabled", false);
-            alert("AppBundle was registered");
-        }).fail(function (jqXHR, textStatus, errorThrown) {
-            apiStatus("");
-            $("#loaders").css('visibility', 'hidden');
-            alert("Failed to register AppBundle : " + errorThrown);
-        });
-
-        formData.delete("file");
-
-    }
+    formData.delete("file");
 
 });
 

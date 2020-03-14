@@ -754,7 +754,7 @@ router.get("/register-activity", function (req, res) {
                     "value": "_tilemode 0 -export _pdf _all result.pdf\n"
                 }
             },
-            "engine": "Autodesk.AutoCAD+23",
+            "engine": "Autodesk.AutoCAD+23_1",
             "appbundles": [],
             "description": "PDF output"
         };

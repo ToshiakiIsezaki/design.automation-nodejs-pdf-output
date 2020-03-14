@@ -38,8 +38,8 @@
             opacity: 1;
             position: absolute;
             z-index: 999;
-            top: 41%;
-            left: 45%;
+            top: 45%;
+            left: 48%;
         }
 
         .lds-ring {
@@ -56,10 +56,10 @@
                 width: 51px;
                 height: 51px;
                 margin: 6px;
-                border: 6px solid #fff;
+                border: 6px solid #cccccc;
                 border-radius: 50%;
                 animation: lds-ring 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
-                border-color: #fff transparent transparent transparent;
+                border-color: #cccccc transparent transparent transparent;
             }
 
                 .lds-ring div:nth-child(1) {
@@ -86,58 +86,46 @@
     </style>
 </head>
 <body onload="onViewModel()">
-    <div class="container mx-auto d-block">
-        <div class="row w-100">
-            <div class="col-lg-8" style="height: 700px">
-                <div class="lds-ring" id="loaders" style="visibility:hidden"><div></div><div></div><div></div><div></div></div>
-                <div id="viewer3d"></div>
+    <div class="row ml-5 mxauto">
+        <div class="col-lg-10" style="height: 700px">
+            <div class="lds-ring" id="loaders" style="visibility:hidden"><div></div><div></div><div></div><div></div></div>
+            <div id="viewer3d"></div>
+        </div>
+        <div class="my-4 ml-3">
+            <form style="display:none" id="data-form-template" method="POST" action="/template-upload">
+                <input id="form-file-template" type="file" name="file" />
+            </form>
+            <div>
+                <button type="button" class="btn btn-primary col-11 ml-3 my-2" id="start">Upload</button>
             </div>
-            <div class="col-4 my-3">
-                <form id="data-form-template" class="ml-3" method="POST" action="/template-upload">
-                    <button type="button" class="btn btn-warning btn-outline-danger" id="uploadtemplate">Upload Source</button>
-                    <input id="form-file-template" type="file" name="file" />
-                </form>
-                <button type="button" class="btn btn-primary ml-3" id="start">Submit</button>
-                <button type="button" class="btn btn-success ml-2" disabled="disabled" id="download">Download</button>
-                <div class="ml-3 my-3">
-                    <div class="row my-3">
-                        <img class="ml-3" src="/images/authentication-api-blue.png" />
-                        <img class="ml-3 my-3" id="OA" style="visibility:hidden" src="/images/direction-arrow-icon-gray.png" />
-                    </div>
-                    <div class="row my-3">
-                        <div class="ml-3"><img src="/images/design-automation-api-blue.png" /></div>
-                        <img class="ml-3 my-3" id="DA" style="visibility:hidden" src="/images/direction-arrow-icon-gray.png" />
-                    </div>
-                    <div class="row my-3">
-                        <div class="ml-3"><img src="/images/data-management-api-blue.png" /></div>
-                        <img class="ml-3 my-3" id="DM" style="visibility:hidden" src="/images/direction-arrow-icon-gray.png" />
-                    </div>
-                    <div class="row my-3">
-                        <div class="ml-3"><img src="/images/model-derivative-api-blue.png" /></div>
-                        <img class="ml-3 my-3" id="MD" style="visibility:hidden" src="/images/direction-arrow-icon-gray.png" />
-                    </div>
-                    <div class="row my-3">
-                        <div class="ml-3"><img src="/images/viewer-api-blue.png" /></div>
-                        <img class="ml-3 my-3" id="VR" src="/images/direction-arrow-icon-gray.png" />
-                    </div>
-                </div>
+            <div>
+                <button type="button" class="btn btn-success col-11 ml-3 my-2" disabled="disabled" id="download">Download</button>
             </div>
-            <div class="container mx-auto d-block">
-                <div class="row my-3">
-                    <button type="button" class="btn btn-warning btn-outline-danger ml-5" id="delappbundle">Delete AppBundle</button>
-                </div>
-                <div class="row my-3">
-                    <form id="data-form-appbundle" class="ml-5" method="POST" action="/appbundle-upload">
-                        <button type="button" class="btn btn-warning btn-outline-danger" id="regiappbundle">Register AppBundle</button>
-                        <input id="form-file-appbundle" type="file" name="file" />
-                    </form>
-                </div>
-                <div class="row my-3">
-                    <button type="button" class="btn btn-warning btn-outline-danger ml-5" id="delactivity">Delete Activity</button>
-                </div>
-                <div class="row my-3">
-                    <button type="button" class="btn btn-warning btn-outline-danger ml-5" id="regiactivity">Register Activity</button>
-                </div>
+            <div class="row ml-1 my-3">
+                <img class="ml-3" src="/images/authentication-api-blue.png" />
+                <img class="ml-2 my-3" id="OA" style="visibility:hidden" src="/images/direction-arrow-icon-gray.png" />
+            </div>
+            <div class="row ml-1 my-3">
+                <div class="ml-3"><img src="/images/design-automation-api-blue.png" /></div>
+                <img class="ml-2 my-3" id="DA" style="visibility:hidden" src="/images/direction-arrow-icon-gray.png" />
+            </div>
+            <div class="row ml-1 my-3">
+                <div class="ml-3"><img src="/images/data-management-api-blue.png" /></div>
+                <img class="ml-2 my-3" id="DM" style="visibility:hidden" src="/images/direction-arrow-icon-gray.png" />
+            </div>
+            <div class="row ml-1 my-3">
+                <div class="ml-3"><img src="/images/model-derivative-api-blue.png" /></div>
+                <img class="ml-2 my-3" id="MD" style="visibility:hidden" src="/images/direction-arrow-icon-gray.png" />
+            </div>
+            <div class="row ml-1 my-3">
+                <div class="ml-3"><img src="/images/viewer-api-blue.png" /></div>
+                <img class="ml-2 my-3" id="VR" src="/images/direction-arrow-icon-gray.png" />
+            </div>
+            <div>
+                <button type="button" class="btn btn-warning btn-outline-danger col-11 ml-3 my-2" id="delactivity">Delete Activity</button>
+            </div>
+            <div>
+                <button type="button" class="btn btn-warning btn-outline-danger col-11 ml-3 my-2" id="regiactivity">Register Activity</button>
             </div>
         </div>
     </div>
