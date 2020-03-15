@@ -51,7 +51,7 @@ function initializeViewer(urn) {
         _viewer.addEventListener(Autodesk.Viewing.GEOMETRY_LOADED_EVENT, onViewerGeometryLoaded);
 
         // Change loading-spinnner
-        //replaceSpinner();
+        replaceSpinner();
 
         // Load viewable
         var documentId = 'urn:' + urn;
@@ -170,6 +170,7 @@ $(document).on("change", "[id^='data-form-template']", function () {
     }).done(function (res) {
         $("#start").prop("disabled", false);
         console.log("Source drawing was loaded");
+
         // Process start
         $("#start").prop("disabled", true);
         $("#download").prop("disabled", true);
@@ -303,7 +304,7 @@ $(document).on("change", "[id^='data-form-template']", function () {
 
         }).fail(function (jqXHR, textStatus, errorThrown) {
             $("#loaders").css('visibility', 'hidden');
-            alert("Failed to CoilCreation process");
+            alert("Failed to PdfCreation process");
             console.log('Failed : ', jqXHR, textStatus, errorThrown);
         });
 
@@ -392,7 +393,7 @@ function onViewModel() {
         $("#regiactivity").prop("disabled", true);
     }
 
-    var urn = "dXJuOmFkc2sub2JqZWN0czpvcy5vYmplY3Q6ZnBkLWphcGFuLWF2cGc1ZmdyaDVxYnBvOGhrMTVsc3p6ZzhkcmZrbnJvdXdtd2QwcDhsbXNlMzJwN29qb3h6NXB6b251dGktN2ctZGE0YS9sYW5kaW5nLmR3Zw==";
+    var urn = ":dXJuOmFkc2sub2JqZWN0czpvcy5vYmplY3Q6ZnBkLWphcGFuLWF2cGc1ZmdyaDVxYnBvOGhrMTVsc3p6ZzhkcmZrbnJvdXdtd2QwcDhsbXNlMzJwN29qb3h6NXB6b251dGktN2ctZGE0YS9Gb3JnZS1Mb2dvLnBkZg==";
     initializeViewer(urn);
 }
 
