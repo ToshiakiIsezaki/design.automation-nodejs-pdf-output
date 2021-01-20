@@ -113,7 +113,7 @@ function replaceSpinner() {
 $(document).on("click", "[id^='start']", function () {
 
     // Open File dialog
-    $("#form-file-template").click();
+    $("#form-file-drawing").click();
 
 });
 
@@ -143,10 +143,10 @@ $(document).on("click", "[id^='download']", function () {
 });
 
 // Process start after file selection
-$(document).on("change", "[id^='data-form-template']", function () {
+$(document).on("change", "[id^='data-form-drawing']", function () {
 
     // File upload
-    if ($('#form-file-template').val().length === 0) {
+    if ($('#form-file-drawing').val().length === 0) {
         return;
     }
 
@@ -156,11 +156,11 @@ $(document).on("change", "[id^='data-form-template']", function () {
     apiStatus("DM");
     $("#loaders").css('visibility', 'visible');
 
-    var form = $('#data-form-template').get()[0];
+    var form = $('#data-form-drawing').get()[0];
 
     var formData = new FormData(form);
 
-    var uri = '/api/template-upload';
+    var uri = '/api/drawing-upload';
     $.ajax({
         url: uri,
         type: 'POST',
@@ -316,6 +316,7 @@ $(document).on("change", "[id^='data-form-template']", function () {
     });
 
     formData.delete("file");
+    $('input[type=file]').val('');
 
 });
 

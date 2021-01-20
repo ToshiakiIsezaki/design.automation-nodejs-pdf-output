@@ -53,10 +53,11 @@ require('date-utils');
 var bucketsApi = new ForgeSDK.BucketsApi(), // Buckets Client
     objectsApi = new ForgeSDK.ObjectsApi(), // Objects Client
     derivativesApi = new ForgeSDK.DerivativesApi(); // Derivatives Client
+    itemsApi = new ForgeSDK.ItemsApi(); // Items Client
 
 // Initialize the 2-legged oauth2 client
 var oAuth2TwoLegged = new ForgeSDK.AuthClientTwoLegged(CLIENT_ID, CLIENT_SECRET,
-    ['code:all', 'data:write', 'data:read', 'bucket:read', 'bucket:update', 'bucket:create'], true);
+    ['code:all', 'data:create', 'data:write', 'data:read', 'bucket:read', 'bucket:update', 'bucket:create'], true);
 
 /**
  * General error handling method
@@ -340,6 +341,10 @@ router.post("/process", function (req, res) {
                                     "Content-Type": "application/octet-stream"
                                 },
                                 "verb": 'put'
+                            },
+                            "onComplete": {
+                                "verb": "post",
+                                "url": "http://c8f92ab4.ngrok.io/api/oncomplete"
                             }
                         }
                     };
@@ -354,7 +359,6 @@ router.post("/process", function (req, res) {
                         body: JSON.stringify(payload)
                     }, function (error, workitemres, body) {
                         var data = JSON.stringify(workitemres);
-                        console.log(JSON.parse(data).statusCode);
                         if (JSON.parse(data).statusCode === 200) {
                             var id = JSON.parse(JSON.parse(data).body).id;
                             console.log(" WorkItem was created >> WorkItem Id :" + id);
@@ -474,11 +478,10 @@ router.get('/translation-status', function (req, res) {
 });
 
 // Upload Source drawing
-router.post("/template-upload", upload.single("file"), function (req, res) {
+router.post("/drawing-upload", upload.single("file"), function (req, res) {
 
     FILE_NAME = req.file.originalname;
     FILE_PATH = req.file.path;
-    console.log(FILE_NAME);
     SOURCE_DWG = FILE_NAME,
 
     oAuth2TwoLegged.authenticate().then(function (credentials) {
@@ -502,159 +505,12 @@ router.post("/template-upload", upload.single("file"), function (req, res) {
 
                 var objectId = uploadRes.body.objectId;
                 var urn = base64encode(objectId);
-                console.log("**** Template drawing file was uploaded :" + urn);
+                console.log("**** Source drawing file was uploaded :" + urn);
                 res.sendStatus(200);
 
             }, defaultHandleError);
 
         }, defaultHandleError);
-
-    }, defaultHandleError);
-
-});
-
-// Delete AppBundle
-router.get("/delete-appbundle", function (req, res) {
-
-    oAuth2TwoLegged.authenticate().then(function (credentials) {
-
-        console.log("**** Check existing AppBundle");
-
-        var uri = "https://developer.api.autodesk.com/da/us-east/v3/appbundles";
-        request.get({
-            url: uri,
-            headers: {
-                'authorization': 'Bearer ' + credentials.access_token
-            }
-        }, function (error, appbundleres, body) {
-
-            var data = JSON.stringify(appbundleres);
-            if (JSON.parse(data).statusCode === 200) {
-                var list = JSON.parse(JSON.parse(data).body).data;
-                for (let i = 0; i < list.length; i++) {
-                    console.log(" " + list[i]);
-                    if (list[i] === DA4A_FQ_ID) {
-                        console.log(" " + DA4A_FQ_ID + " AppBundle is already there");
-
-                        var uri = "https://developer.api.autodesk.com/da/us-east/v3/appbundles/" + DA4A_UQ_ID;
-                        request.delete({
-                            url: uri,
-                            headers: {
-                                'authorization': 'Bearer ' + credentials.access_token
-                            }
-                        }, function (error, appbundledelres, body) {
-                            if (JSON.parse(JSON.stringify(appbundledelres)).statusCode === 204) {
-                                console.log(" " + DA4A_FQ_ID + " AppBundle was deleted");
-                            } else {
-                                console.log("Error : " + error);
-                                res.sendStatus(JSON.parse(JSON.stringify(appbundledelres)).statusCode);
-                            }
-                        });
-
-                    }
-                    
-                }
-            } else {
-                console.log("Error : " + error);
-                res.sendStatus(JSON.parse(data).statusCode);
-            }
-        });
-
-    }, defaultHandleError);
-    res.sendStatus(200);
-
-});
-
-// Upload AppBundle
-router.post("/appbundle-upload", upload.single("file"), function (req, res) {
-
-    FILE_NAME = req.file.originalname;
-    FILE_PATH = req.file.path;
-    console.log(FILE_NAME);
-    oAuth2TwoLegged.authenticate().then(function (credentials) {
-
-        console.log("**** Register AppBundle");
-
-        // Registere AppBundle
-        var payload =
-        {
-            "id": DA4A_UQ_ID,
-            "engine": "Autodesk.AutoCAD+23_1",
-            "description": "Create a coil"
-        };
-
-        var uri = "https://developer.api.autodesk.com/da/us-east/v3/appbundles";
-        request.post({
-            url: uri,
-            headers: {
-                'content-type': 'application/json',
-                'authorization': 'Bearer ' + credentials.access_token
-            },
-            body: JSON.stringify(payload)
-        }, function (error, appbundleres, body) {
-            var data = JSON.stringify(appbundleres);
-            if (JSON.parse(data).statusCode === 200) {
-
-                var uploadParameters = JSON.parse(JSON.parse(data).body).uploadParameters;
-                var fdata = JSON.parse(JSON.stringify(uploadParameters)).formData;
-
-                // Upload AppBundle
-                var uri = JSON.parse(JSON.stringify(uploadParameters)).endpointURL;
-                let formData = new FormData();
-                formData.append('key', fdata['key']);
-                formData.append('content-type', fdata['content-type']);
-                formData.append('policy', fdata['policy']);
-                formData.append('success_action_status', fdata['success_action_status']);
-                formData.append('success_action_redirect', fdata['success_action_redirect']);
-                formData.append('x-amz-signature', fdata['x-amz-signature']);
-                formData.append('x-amz-credential', fdata['x-amz-credential']);
-                formData.append('x-amz-algorithm', fdata['x-amz-algorithm']);
-                formData.append('x-amz-date', fdata['x-amz-date']);
-                formData.append('x-amz-server-side-encryption', fdata['x-amz-server-side-encryption']);
-                formData.append('x-amz-security-token', fdata['x-amz-security-token']);
-                formData.append("file", fs.createReadStream(req.file.path));
-                formData.submit(uri, function (error, uploadres) {
-                    if (uploadres.statusCode === 200) {
-                        console.log(" AppBundle Upload succeeded");
-
-                        // Create Alias
-                        var payload =
-                        {
-                            "version": 1,
-                            "id": "dev"
-                        };
-
-                        var uri = "https://developer.api.autodesk.com/da/us-east/v3/appbundles/" + DA4A_UQ_ID + "/aliases";
-                        request.post({
-                            url: uri,
-                            headers: {
-                                'content-type': 'application/json',
-                                'authorization': 'Bearer ' + credentials.access_token
-                            },
-                            body: JSON.stringify(payload)
-                        }, function (error, aliasres, body) {
-                            data = JSON.stringify(aliasres);
-                            if (JSON.parse(data).statusCode === 200) {
-                                console.log(" AppBundle's Alias was created");
-                                res.sendStatus(200);
-                            } else {
-                                console.log("Error : " + error);
-                                res.sendStatus(JSON.parse(data).statusCode);
-                            }
-                        });
-
-                    } else {
-                        console.log("Error : " + error);
-                        res.sendStatus(uploadres.statusCode);
-                    }
-                });
-
-            } else {
-                console.log("Error : " + error);
-                res.sendStatus(JSON.parse(data).statusCode);
-            }
-
-        });
 
     }, defaultHandleError);
 
@@ -718,20 +574,11 @@ router.get("/register-activity", function (req, res) {
 
         console.log("**** Create Activity");
 
-        var strScript = '"';
-        strScript = strScript & "_tilemode 0 -export _pdf _all(getvar ";
-        strScript = strScript & '"';
-        strScript = strScript & "DWGNAME";
-        strScript = strScript & '"';
-        strScript = strScript & ").pdf\n";
-        strScript = strScript & '"';
-        console.log(strScript);
-
         // Create Activity
         var payload =
         {
             "id": DA4A_UQ_ID,
-            "commandLine": ["$(engine.path)\\accoreconsole.exe /i $(args[DWGInput].path) /s $(settings[script].path)"],
+            "commandLine": ['$(engine.path)\\accoreconsole.exe /i "$(args[DWGInput].path)" /s "$(settings[script].path)"'],
             "parameters": {
                 "DWGInput": {
                     "zip": false,
@@ -805,6 +652,66 @@ router.get("/register-activity", function (req, res) {
             }
 
         });
+
+    }, defaultHandleError);
+
+});
+
+// onComplete callback
+router.post("/oncomplete", function (req, res) {
+
+    console.log("**** onComplete callback was invoked !!");
+    oAuth2TwoLegged.authenticate().then(function (credentials) {
+
+        var data = JSON.stringify(credentials);
+        var token = JSON.parse(data).access_token;
+
+        var payload =
+        {
+            "jsonapi": {
+                "version": "1.0"
+            },
+            "data": {
+                "type": "objects",
+                "attributes": {
+                    "name": "result.pdf"
+                },
+                "relationships": {
+                    "target": {
+                        "data": {
+                            "type": "folders",
+                            "id": "urn:adsk.wipprod:fs.folder:co.poo-Zp6mRe-eqjsyQVeXeQ"
+                        }
+                    }
+                }
+            }
+        };
+
+        var projectId = 'b.dd31c918-027a-4a29-9946-ec292facdf7a'; // DA4A folder
+
+        var uri = "https://developer.api.autodesk.com/data/v1/projects/" + projectId + "/storage";
+        request.post({
+            url: uri,
+            headers: {
+                'content-type': 'application/vnd.api+json',
+                'authorization': 'Bearer ' + credentials.access_token
+            },
+            body: JSON.stringify(payload)
+        }, function (error, createstorageres, body) {
+            var data = JSON.stringify(createstorageres);
+            if (JSON.parse(data).statusCode === 201) {
+
+                console.log(body);
+
+
+
+
+
+            } else {
+                console.log("Error : " + error);
+            }
+        });
+
 
     }, defaultHandleError);
 

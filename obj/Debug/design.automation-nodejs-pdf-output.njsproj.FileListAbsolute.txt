@@ -1,0 +1,3 @@
+C:\Users\iseza\OneDrive\デスクトップ\イベント\Forge - BIM 360 活用セミナー\design.automation-nodejs-pdf-output-改2\design.automation-nodejs-pdf-output\obj\Debug\design.automation-nodejs-pdf-output.njsprojAssemblyReference.cache
+C:\Users\iseza\OneDrive\デスクトップ\イベント\Forge - BIM 360 活用セミナー\design.automation-nodejs-pdf-output-改2\design.automation-nodejs-pdf-output\obj\Debug\design.automation-nodejs-pdf-output.njsproj.CoreCompileInputs.cache
+C:\Users\iseza\OneDrive\デスクトップ\イベント\Forge - BIM 360 活用セミナー\design.automation-nodejs-pdf-output-改2\design.automation-nodejs-pdf-output\bin\Microsoft.NodejsTools.WebRole.dll
