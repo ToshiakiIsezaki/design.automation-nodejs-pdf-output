@@ -15,11 +15,11 @@
 // DOES NOT WARRANT THAT THE OPERATION OF THE PROGRAM WILL BE
 // UNINTERRUPTED OR ERROR FREE.
 /////////////////////////////////////////////////////////////////////////////////
-var CLIENT_ID = 'nqpwqsDLFGkSO6LgA2mvaSXy5AeH5VSJ',
-    CLIENT_SECRET = 'T66cbb0737e68467',
-    BUCKET_KEY = 'fpd-japan-avpg5fgrh5qbpo8hk15lszzg8drfknrouwmwd0p8lmse32p7ojoxz5pzonuti-7g-da4a',
+var CLIENT_ID = 'zf99QjeGGbOwyEqzfUBMzskO1zag2fPP',
+    CLIENT_SECRET = 'gemClGo7m8oOetXJ',
+    BUCKET_KEY = 'das-japan-zf99qjeggbowyeqzfubmzsko1zag2fpp-transient',
     DA4A_UQ_ID = 'PDFPlot',
-    DA4A_FQ_ID = 'nqpwqsDLFGkSO6LgA2mvaSXy5AeH5VSJ.PDFPlot+dev',
+    DA4A_FQ_ID = 'zf99QjeGGbOwyEqzfUBMzskO1zag2fPP.PDFPlot+dev',
     SOURCE_DWG = 'source.dwg',
     RESULT_PDF = 'result.pdf',
     VIEWABLE_PDF = '',

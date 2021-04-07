@@ -394,7 +394,7 @@ function onViewModel() {
         $("#regiactivity").prop("disabled", true);
     }
 
-    var urn = ":dXJuOmFkc2sub2JqZWN0czpvcy5vYmplY3Q6ZnBkLWphcGFuLWF2cGc1ZmdyaDVxYnBvOGhrMTVsc3p6ZzhkcmZrbnJvdXdtd2QwcDhsbXNlMzJwN29qb3h6NXB6b251dGktN2ctZGE0YS9Gb3JnZS1Mb2dvLnBkZg==";
+    var urn = "dXJuOmFkc2sub2JqZWN0czpvcy5vYmplY3Q6ZGFzLWphcGFuLXpmOTlxamVnZ2Jvd3llcXpmdWJtenNrbzF6YWcyZnBwLXRyYW5zaWVudC9Gb3JnZS1Mb2dvLnBkZg";
     initializeViewer(urn);
 }
 

@@ -2,7 +2,7 @@
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">14.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
-    <Name>design.automation-nodejs-pdf-output</Name>
+    <Name>forge-da4a-pdf-output</Name>
     <RootNamespace>design.automation-nodejs-coil-creation</RootNamespace>
     <LastActiveSolutionConfig>Debug|Any CPU</LastActiveSolutionConfig>
     <NameOfLastUsedPublishProfile>forge-da4a-nodejs-coil-creation - Web Deploy</NameOfLastUsedPublishProfile>
