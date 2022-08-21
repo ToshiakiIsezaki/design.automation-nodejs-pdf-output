@@ -20,7 +20,7 @@ var CLIENT_ID = 'zf99QjeGGbOwyEqzfUBMzskO1zag2fPP',
     BUCKET_KEY = 'das-japan-zf99qjeggbowyeqzfubmzsko1zag2fpp-transient',
     DA4A_UQ_ID = 'PDFPlot',
     DA4A_FQ_ID = 'zf99QjeGGbOwyEqzfUBMzskO1zag2fPP.PDFPlot+dev',
-    DA4A_ENGINE = 'Autodesk.AutoCAD+23_1',
+    DA4A_ENGINE = 'Autodesk.AutoCAD+24_1',
     SOURCE_DWG = 'source.dwg',
     RESULT_PDF = 'result.pdf',
     VIEWABLE_PDF = '',
@@ -345,7 +345,7 @@ router.post("/process", function (req, res) {
                             },
                             "onComplete": {
                                 "verb": "post",
-                                "url": "http://c8f92ab4.ngrok.io/api/oncomplete"
+                                "url": "http://forge-da4a-pdf-output.herokuapp.com/api/oncomplete"
                             }
                         }
                     };
@@ -599,8 +599,7 @@ router.get("/register-activity", function (req, res) {
             },
             "settings": {
                 "script": {
-                    //"value": "_tilemode 0 -export _pdf _all result.pdf\n"
-                    "value": "_TILEMODE\n1\n-PLOT\nY\nModel\nDWG To PDF.pc3\nANSI A (11.00 x 8.50 Inches)\nMillimeters\nLandscape\nN\nExtents\n1=4\nCenter\nY\nacad.ctb\nY\nA\nresult.pdf\nN\nY\n"
+                    "value": "_tilemode 0 -export _pdf _all result.pdf\n"
                 }
             },
             "engine": DA4A_ENGINE,
@@ -702,13 +701,7 @@ router.post("/oncomplete", function (req, res) {
         }, function (error, createstorageres, body) {
             var data = JSON.stringify(createstorageres);
             if (JSON.parse(data).statusCode === 201) {
-
                 console.log(body);
-
-
-
-
-
             } else {
                 console.log("Error : " + error);
             }
