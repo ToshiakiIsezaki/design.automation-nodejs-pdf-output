@@ -325,9 +325,11 @@ router.post("/process", function (req, res) {
                     // Create WorkItem
                     var payload =
                     {
-                        "activityId": DA4A_FQ_ID,
+                        //"activityId": DA4A_FQ_ID,
+                        "activityId": "AutoCAD.PlotToPDF+prod",
                         "arguments": {
-                            "DWGInput": {
+                            //"DWGInput": {
+                            "HostDwg": {
                                 "url": signedURLforInput,
                                 "headers": {
                                     "Authorization": "Bearer " + credentials.access_token,
@@ -335,7 +337,8 @@ router.post("/process", function (req, res) {
                                 },
                                 "verb": "get"
                             }, 
-                            "PDFOutput": {
+                            //"PDFOutput": {
+                            "Result": {
                                 "url": signedURLforOutput,
                                 "headers": {
                                     "Authorization": "Bearer " + credentials.access_token,
