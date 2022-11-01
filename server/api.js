@@ -120,9 +120,10 @@ var uploadFile = function (bucketKey, filePath, fileName) {
             if (err) {
                 reject(err);
             }
-            else
-            {
-                objectsApi.uploadObject(bucketKey, fileName, data.length, data, {}, oAuth2TwoLegged, oAuth2TwoLegged.getCredentials()).then(
+            else {
+                //* obsolute
+                //objectsApi.uploadObject(bucketKey, fileName, data.length, data, {}, oAuth2TwoLegged, oAuth2TwoLegged.getCredentials()).then(
+                objectsApi.uploadResources(bucketKey, [{ objectKey: fileName, data }], { useAcceleration: true }, oAuth2TwoLegged, oAuth2TwoLegged.getCredentials()).then(
                     function (res) {
                         resolve(res);
                     }, function (err) {
@@ -152,6 +153,7 @@ var downloadFile = function (bucketKey, fileName) {
     console.log("**** Downloading a file from bucket:" + bucketKey + ", filename:" + fileName);
     return new Promise(function (resolve, reject) {
         objectsApi.getObject(bucketKey, fileName).then(
+        //objectsApi.bjectsApi.downloadResources(bucketKey, objects, { useCdn: true, minutesExpiration: 5 }, oAuth2TwoLegged, oAuth2TwoLegged.getCredentials()).then(
             function (res) {
                 resolve(res);
             }, function (err) {
@@ -235,11 +237,11 @@ var copyFile = function (orgname, destname) {
 // Create signed URL for upload/download
 var createSignedURL = function (name, access) {
     return new Promise(function (resolve, reject) {
-        var opts = new ForgeSDK.PostBucketsSigned();
-        opt = {
-            'minutesExpiration': 60 
+        opts = {
+            'minutesExpiration': 60,
+            'useCdn': true
         };
-        objectsApi.createSignedResource(BUCKET_KEY, name, opt, { access: access }, oAuth2TwoLegged, oAuth2TwoLegged.getCredentials()).then(
+        objectsApi.createSignedResource(BUCKET_KEY, name, opts, { access: access }, oAuth2TwoLegged, oAuth2TwoLegged.getCredentials()).then(
             function (res) {
                 resolve(res);
             }, function (err) {
@@ -507,8 +509,8 @@ router.post("/drawing-upload", upload.single("file"), function (req, res) {
 
             uploadFile(BUCKET_KEY, FILE_PATH, FILE_NAME).then(function (uploadRes) {
 
-                var objectId = uploadRes.body.objectId;
-                var urn = base64encode(objectId);
+                //var objectId = uploadRes.body.objectId; // obsolute endpoint in uploadFile()
+                var objectId = uploadRes[0].completed.objectId;                var urn = base64encode(objectId);
                 console.log("**** Source drawing file was uploaded :" + urn);
                 res.sendStatus(200);
 
@@ -663,7 +665,8 @@ router.get("/register-activity", function (req, res) {
 
 // onComplete callback
 router.post("/oncomplete", function (req, res) {
-
+// to BIM 360 Docs
+/*
     console.log("**** onComplete callback was invoked !!");
     oAuth2TwoLegged.authenticate().then(function (credentials) {
 
@@ -712,7 +715,7 @@ router.post("/oncomplete", function (req, res) {
 
 
     }, defaultHandleError);
-
+*/
 });
 
 module.exports = router;
