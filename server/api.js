@@ -435,7 +435,7 @@ router.get('/start-translation', function (req, res) {
 
             var dt = new Date();
             var formatted = dt.toFormat("YYYY-MM-DD-HH24-MI-SS");
-            VIEWABLE_PDF = formatted + "-" + RESULT_PDF;
+            VIEWABLE_PDF = /*formatted + "-" + */RESULT_PDF;
             copyFile(RESULT_PDF, VIEWABLE_PDF).then(function (copytoRes) {
 
                 var body = JSON.parse(JSON.stringify(copytoRes)).body;
