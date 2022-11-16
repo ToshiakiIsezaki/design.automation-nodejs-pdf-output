@@ -433,14 +433,15 @@ router.get('/start-translation', function (req, res) {
 
     oAuth2TwoLegged.authenticate().then(function (credentials) {
 
-            var dt = new Date();
-            var formatted = dt.toFormat("YYYY-MM-DD-HH24-MI-SS");
+            //var dt = new Date();
+            //var formatted = dt.toFormat("YYYY-MM-DD-HH24-MI-SS");
             VIEWABLE_PDF = /*formatted + "-" + */RESULT_PDF;
             //copyFile(RESULT_PDF, VIEWABLE_PDF).then(function (copytoRes) {
                 console.log("VIEWABLE_PDF : " + VIEWABLE_PDF );
                 //var body = JSON.parse(JSON.stringify(copytoRes)).body;
                 //VIEWABLE_URN = base64encode(JSON.parse(JSON.stringify(body)).objectId);
-        VIEWABLE_URN = base64encode("urn:adsk.objects:os.object:das-japan-zf99qjeggbowyeqzfubmzsko1zag2fpp-transient/result.pdf");
+                //VIEWABLE_URN = base64encode("urn:adsk.objects:os.object:das-japan-zf99qjeggbowyeqzfubmzsko1zag2fpp-transient/result.pdf");
+                VIEWABLE_URN = base64encode("urn:adsk.objects:os.object:" + BUCKET_KEY + "/" + RESULT_PDF);
                 console.log(" " + VIEWABLE_PDF + " was copied for viewable creation");
                 var urn = VIEWABLE_URN;
                 console.log("VIEWABLE_URN : " + VIEWABLE_URN);
