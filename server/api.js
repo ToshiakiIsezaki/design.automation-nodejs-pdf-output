@@ -238,7 +238,7 @@ var copyFile = function (orgname, destname) {
 var createSignedURL = function (name, access) {
     return new Promise(function (resolve, reject) {
         opts = {
-            'minutesExpiration': 60,
+            'minutesExpiration': 15,
             'useCdn': true
         };
         objectsApi.createSignedResource(BUCKET_KEY, name, opts, { access: access }, oAuth2TwoLegged, oAuth2TwoLegged.getCredentials()).then(
@@ -510,7 +510,8 @@ router.post("/drawing-upload", upload.single("file"), function (req, res) {
             uploadFile(BUCKET_KEY, FILE_PATH, FILE_NAME).then(function (uploadRes) {
 
                 //var objectId = uploadRes.body.objectId; // obsolute endpoint in uploadFile()
-                var objectId = uploadRes[0].completed.objectId;                var urn = base64encode(objectId);
+                var objectId = uploadRes[0].completed.objectId;
+                var urn = base64encode(objectId);
                 console.log("**** Source drawing file was uploaded :" + urn);
                 res.sendStatus(200);
 
