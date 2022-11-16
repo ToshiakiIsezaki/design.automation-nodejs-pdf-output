@@ -152,8 +152,8 @@ var deleteFile = function (bucketKey, fileName) {
 var downloadFile = function (bucketKey, fileName) {
     console.log("**** Downloading a file from bucket:" + bucketKey + ", filename:" + fileName);
     return new Promise(function (resolve, reject) {
-        objectsApi.getObject(bucketKey, fileName).then(
-        //objectsApi.bjectsApi.downloadResources(bucketKey, objects, { useCdn: true, minutesExpiration: 5 }, oAuth2TwoLegged, oAuth2TwoLegged.getCredentials()).then(
+        //objectsApi.getObject(bucketKey, fileName).then(
+        objectsApi.downloadResources(bucketKey, [{ objectKey: fileName, responseType: 'arraybuffer' } ], { useCdn: true, minutesExpiration: 15 }, oAuth2TwoLegged, oAuth2TwoLegged.getCredentials()).then(
             function (res) {
                 resolve(res);
             }, function (err) {
@@ -237,7 +237,7 @@ var copyFile = function (orgname, destname) {
 // Create signed URL for upload/download
 var createSignedURL = function (name, access) {
     return new Promise(function (resolve, reject) {
-        opts = {
+        var opts = {
             'minutesExpiration': 15,
             'useCdn': true
         };
@@ -390,11 +390,20 @@ router.post("/process", function (req, res) {
 router.get("/download", function (req, res) {
 
     oAuth2TwoLegged.authenticate().then(function (credentials) {
+        downloadFile(BUCKET_KEY, RESULT_PDF).then(function (downloadRes) {
+            console.log(downloadRes);
+            //var signedURL = JSON.stringify(signedURLRes.body); // obsolete way
+            var signedURL = JSON.stringify(downloadRes[0]);
+            console.log("**** Download was started = " + signedURL);
+            res.end(signedURL);
+        }, defaultHandleError);
+        /*
         createSignedURL(RESULT_PDF, 'read').then(function (signedURLRes) {
             var signedURL = JSON.stringify(signedURLRes.body);
             console.log("**** Download was started = " + signedURL);
             res.end(signedURL);
         }, defaultHandleError);
+        */
     }, defaultHandleError);
 
 });

@@ -132,7 +132,8 @@ $(document).on("click", "[id^='download']", function () {
         console.log(res);
         apiStatus("DM");
         var link = document.createElement('a');
-        var downloadUrl = JSON.parse(res).signedUrl;
+        //var downloadUrl = JSON.parse(res).signedUrl; // obsolete way
+        var downloadUrl = JSON.parse(res).downloadUrl;
         link.href = downloadUrl;
         link.click();
         setTimeout(apiStatus, 3000, "VR");
