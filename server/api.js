@@ -436,13 +436,14 @@ router.get('/start-translation', function (req, res) {
             var dt = new Date();
             var formatted = dt.toFormat("YYYY-MM-DD-HH24-MI-SS");
             VIEWABLE_PDF = /*formatted + "-" + */RESULT_PDF;
-            copyFile(RESULT_PDF, VIEWABLE_PDF).then(function (copytoRes) {
-
-                var body = JSON.parse(JSON.stringify(copytoRes)).body;
-                VIEWABLE_URN = base64encode(JSON.parse(JSON.stringify(body)).objectId);
+            //copyFile(RESULT_PDF, VIEWABLE_PDF).then(function (copytoRes) {
+                console.log("VIEWABLE_PDF : " + VIEWABLE_PDF );
+                //var body = JSON.parse(JSON.stringify(copytoRes)).body;
+                //VIEWABLE_URN = base64encode(JSON.parse(JSON.stringify(body)).objectId);
+        VIEWABLE_URN = base64encode("urn:adsk.objects:os.object:das-japan-zf99qjeggbowyeqzfubmzsko1zag2fpp-transient/result.pdf");
                 console.log(" " + VIEWABLE_PDF + " was copied for viewable creation");
                 var urn = VIEWABLE_URN;
-
+                console.log("VIEWABLE_URN : " + VIEWABLE_URN);
                 translateFile(urn).then(function (translateRes) {
 
                     console.log("**** Tranlation started :" + urn);
@@ -452,7 +453,7 @@ router.get('/start-translation', function (req, res) {
                 }, defaultHandleError);
 
 
-            }, defaultHandleError);
+            //}, defaultHandleError);
 
     }, defaultHandleError);
 
@@ -471,9 +472,11 @@ router.get('/translation-status', function (req, res) {
 
             var progress = JSON.parse(manifestRes).progress;
             if (progress === 'complete') {
+                /*
                 deleteFile(BUCKET_KEY, VIEWABLE_PDF).then(function (deleteRes) {
                     console.log(" " + VIEWABLE_PDF + " for viewable creation was deleted");
                 }, defaultHandleError);
+                */
             }
             res.end(manifestRes);
 
