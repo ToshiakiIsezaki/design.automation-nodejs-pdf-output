@@ -391,10 +391,9 @@ router.get("/download", function (req, res) {
 
     oAuth2TwoLegged.authenticate().then(function (credentials) {
         downloadFile(BUCKET_KEY, RESULT_PDF).then(function (downloadRes) {
-            console.log(downloadRes);
             //var signedURL = JSON.stringify(signedURLRes.body); // obsolete way
             var signedURL = JSON.stringify(downloadRes[0]);
-            console.log("**** Download was started = " + signedURL);
+            console.log("**** Download was started = " + JSON.parse(signedURL).downloadUrl);
             res.end(signedURL);
         }, defaultHandleError);
         /*
