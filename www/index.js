@@ -28,7 +28,7 @@ function initializeViewer(urn) {
     // Intialize Viewer
     var options = {
         env: 'AutodeskProduction',
-        api: 'derivativeV2',  // for models uploaded to EMEA change this option to 'derivativeV2_EU'
+        api: 'derivativeV2',
         language: 'ja',
         getAccessToken: getCredentials
     };
@@ -129,7 +129,6 @@ $(document).on("click", "[id^='download']", function () {
         type: 'GET',
         contentType: 'application/json'
     }).done(function (res) {
-        console.log(res);
         apiStatus("DM");
         var link = document.createElement('a');
         //var downloadUrl = JSON.parse(res).signedUrl; // obsolete way
@@ -395,7 +394,7 @@ function onViewModel() {
         $("#regiactivity").prop("disabled", true);
     }
 
-    var urn = "dXJuOmFkc2sub2JqZWN0czpvcy5vYmplY3Q6ZGFzLWphcGFuLXpmOTlxamVnZ2Jvd3llcXpmdWJtenNrbzF6YWcyZnBwLXRyYW5zaWVudC9Gb3JnZS1Mb2dvLnBkZg";
+    var urn = "dXJuOmFkc2sub2JqZWN0czpvcy5vYmplY3Q6ZGFzLWphcGFuLXpmOTlxamVnZ2Jvd3llcXpmdWJtenNrbzF6YWcyZnBwLXRyYW5zaWVudC9BUFMucGRm";
     initializeViewer(urn);
 }
 

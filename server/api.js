@@ -204,7 +204,7 @@ var translateFile = function (encodedURN) {
                 formats: [
                     {
                         type: "svf",
-                        views: ["2d", "3d"]
+                        views: ["2d"]
                     }
                 ]
             }
@@ -316,69 +316,57 @@ router.post("/process", function (req, res) {
 
         createBucketIfNotExist(BUCKET_KEY).then(function (createBucketRes) {
 
-            createSignedURL(SOURCE_DWG, 'read').then(function (signedURLRes) {
-                var signedURLforInput = JSON.parse(JSON.stringify(signedURLRes.body)).signedUrl;
-                console.log("Signed URL for InputDWG was created:\n" + signedURLforInput);
-
-                createSignedURL(RESULT_PDF, 'write').then(function (signedURLRes) {
-                    var signedURLforOutput = JSON.parse(JSON.stringify(signedURLRes.body)).signedUrl;
-                    console.log("Signed URL for OutputPDF was created:\n" + signedURLforOutput);
-
-                    // Create WorkItem
-                    var payload =
-                    {
-                        //"activityId": DA4A_FQ_ID,
-                        "activityId": "AutoCAD.PlotToPDF+prod",
-                        "arguments": {
-                            //"DWGInput": {
-                            "HostDwg": {
-                                "url": signedURLforInput,
-                                "headers": {
-                                    "Authorization": "Bearer " + credentials.access_token,
-                                    "Content-type": "application/octet-stream"
-                                },
-                                "verb": "get"
-                            }, 
-                            //"PDFOutput": {
-                            "Result": {
-                                "url": signedURLforOutput,
-                                "headers": {
-                                    "Authorization": "Bearer " + credentials.access_token,
-                                    "Content-Type": "application/octet-stream"
-                                },
-                                "verb": 'put'
-                            },
-                            "onComplete": {
-                                "verb": "post",
-                                "url": "http://forge-da4a-pdf-output.herokuapp.com/api/oncomplete"
-                            }
-                        }
-                    };
-
-                    var uri = "https://developer.api.autodesk.com/da/us-east/v3/workitems";
-                    request.post({
-                        url: uri,
-                        headers: {
-                            'content-type': 'application/json',
-                            'authorization': 'Bearer ' + credentials.access_token
+            // Create WorkItem
+            var payload =
+            {
+                //"activityId": DA4A_FQ_ID,
+                "activityId": "AutoCAD.PlotToPDF+prod",
+                "arguments": {
+                    //"DWGInput": {
+                    "HostDwg": {
+                        "url": "urn:adsk.objects:os.object:" + BUCKET_KEY + "/" + SOURCE_DWG,
+                        "headers": {
+                            "Authorization": "Bearer " + credentials.access_token,
+                            "Content-type": "application/octet-stream"
                         },
-                        body: JSON.stringify(payload)
-                    }, function (error, workitemres, body) {
-                        var data = JSON.stringify(workitemres);
-                        if (JSON.parse(data).statusCode === 200) {
-                            var id = JSON.parse(JSON.parse(data).body).id;
-                            console.log(" WorkItem was created >> WorkItem Id :" + id);
-                            console.log(" Process status :" + JSON.parse(JSON.parse(data).body).status);
-                            data = id;
-                        } else {
-                            console.log("Error : " + error);
-                        }
-                        res.send(data);
-                    });
-                        
-                }, defaultHandleError);
+                        "verb": "get"
+                    },
+                    //"PDFOutput": {
+                    "Result": {
+                        "url": "urn:adsk.objects:os.object:" + BUCKET_KEY + "/" + RESULT_PDF,
+                        "headers": {
+                            "Authorization": "Bearer " + credentials.access_token,
+                            "Content-Type": "application/octet-stream"
+                        },
+                        "verb": 'put'
+                    },
+                    "onComplete": {
+                        "verb": "post",
+                        "url": "http://forge-da4a-pdf-output.herokuapp.com/api/oncomplete"
+                    }
+                }
+            };
 
-            }, defaultHandleError);
+            var uri = "https://developer.api.autodesk.com/da/us-east/v3/workitems";
+            request.post({
+                url: uri,
+                headers: {
+                    'content-type': 'application/json',
+                    'authorization': 'Bearer ' + credentials.access_token
+                },
+                body: JSON.stringify(payload)
+            }, function (error, workitemres, body) {
+                var data = JSON.stringify(workitemres);
+                if (JSON.parse(data).statusCode === 200) {
+                    var id = JSON.parse(JSON.parse(data).body).id;
+                    console.log(" WorkItem was created >> WorkItem Id :" + id);
+                    console.log(" Process status :" + JSON.parse(JSON.parse(data).body).status);
+                    data = id;
+                } else {
+                    console.log("Error : " + error);
+                }
+                res.send(data);
+            });
 
         }, defaultHandleError);
 
@@ -391,12 +379,12 @@ router.get("/download", function (req, res) {
 
     oAuth2TwoLegged.authenticate().then(function (credentials) {
         downloadFile(BUCKET_KEY, RESULT_PDF).then(function (downloadRes) {
-            //var signedURL = JSON.stringify(signedURLRes.body); // obsolete way
             var signedURL = JSON.stringify(downloadRes[0]);
-            console.log("**** Download was started = " + JSON.parse(signedURL).downloadUrl);
+            console.log("**** Downloading started : " + JSON.parse(signedURL).downloadUrl);
             res.end(signedURL);
         }, defaultHandleError);
         /*
+        // obsolete way
         createSignedURL(RESULT_PDF, 'read').then(function (signedURLRes) {
             var signedURL = JSON.stringify(signedURLRes.body);
             console.log("**** Download was started = " + signedURL);
