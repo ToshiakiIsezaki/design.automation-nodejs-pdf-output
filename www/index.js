@@ -44,6 +44,7 @@ function initializeViewer(urn) {
             console.error('Failed to create a Viewer: WebGL not supported.');
             return;
         }
+        Autodesk.Viewing.endpoint.HTTP_REQUEST_HEADERS['If-Modified-Since'] = 'Sat, 29 Oct 1994 19:43:31 GMT';
 
         console.log('Initialization complete, loading a model next...');
         _viewer.addEventListener(Autodesk.Viewing.TOOLBAR_CREATED_EVENT, onToolbarCreated);
