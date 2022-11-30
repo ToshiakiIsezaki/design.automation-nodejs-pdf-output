@@ -324,12 +324,14 @@ router.post("/process", function (req, res) {
                 "arguments": {
                     //"DWGInput": {
                     "HostDwg": {
+                        "pathInZip": "ÉTÉìÉvÉãà”è†_ïΩñ ê}(1).dwg",
                         "url": "urn:adsk.objects:os.object:" + BUCKET_KEY + "/" + SOURCE_DWG,
                         "headers": {
                             "Authorization": "Bearer " + credentials.access_token,
-                            "Content-type": "application/octet-stream"
+                            //"Content-type": "application/octet-stream"
+                            "Content-Type": "application/json; charset=utf-8"
                         },
-                        "verb": "get"
+                        "verb": "get",
                     },
                     //"PDFOutput": {
                     "Result": {
@@ -351,7 +353,7 @@ router.post("/process", function (req, res) {
             request.post({
                 url: uri,
                 headers: {
-                    'content-type': 'application/json',
+                    'content-type': 'application/json; charset=utf-8',
                     'authorization': 'Bearer ' + credentials.access_token
                 },
                 body: JSON.stringify(payload)
@@ -583,10 +585,10 @@ router.get("/register-activity", function (req, res) {
         var payload =
         {
             "id": DA4A_UQ_ID,
-            "commandLine": ['$(engine.path)\\accoreconsole.exe /i "$(args[DWGInput].path)" /s "$(settings[script].path)"'],
+            "commandLine": ['$(engine.path)\\accoreconsole.exe /i "$(args[DWGInput].path)" /s "$(settings[script].path)" /l ja-JP'],
             "parameters": {
                 "DWGInput": {
-                    "zip": false,
+                    "zip": true,
                     "ondemand": false,
                     "verb": "get",
                     "description": "Source drawing",
