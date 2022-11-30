@@ -324,7 +324,7 @@ router.post("/process", function (req, res) {
                 "arguments": {
                     //"DWGInput": {
                     "HostDwg": {
-                        "pathInZip": "ƒTƒ“ƒvƒ‹ˆÓ _•½–Ê}(1).dwg",
+                        "pathInZip": "ã‚µãƒ³ãƒ—ãƒ«æ„åŒ _å¹³é¢å›³(1).dwg",
                         "url": "urn:adsk.objects:os.object:" + BUCKET_KEY + "/" + SOURCE_DWG,
                         "headers": {
                             "Authorization": "Bearer " + credentials.access_token,
