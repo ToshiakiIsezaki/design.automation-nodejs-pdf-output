@@ -319,26 +319,23 @@ router.post("/process", function (req, res) {
             // Create WorkItem
             var payload =
             {
-                //"activityId": DA4A_FQ_ID,
-                "activityId": "AutoCAD.PlotToPDF+prod",
+                "activityId": DA4A_FQ_ID,
+                //"activityId": "AutoCAD.PlotToPDF+prod",
                 "arguments": {
-                    //"DWGInput": {
-                    "HostDwg": {
-                        "pathInZip": "サンプル意匠_平面図(1).dwg",
+                    "DWGInput": {
+                    //"HostDwg": {
+                        //"pathInZip": "8th floor.dwg", // parent drawing when zip
                         "url": "urn:adsk.objects:os.object:" + BUCKET_KEY + "/" + SOURCE_DWG,
                         "headers": {
-                            "Authorization": "Bearer " + credentials.access_token,
-                            //"Content-type": "application/octet-stream"
-                            "Content-Type": "application/json; charset=utf-8"
+                            "Authorization": "Bearer " + credentials.access_token
                         },
                         "verb": "get",
                     },
-                    //"PDFOutput": {
-                    "Result": {
+                    "PDFOutput": {
+                    //"Result": {
                         "url": "urn:adsk.objects:os.object:" + BUCKET_KEY + "/" + RESULT_PDF,
                         "headers": {
-                            "Authorization": "Bearer " + credentials.access_token,
-                            "Content-Type": "application/octet-stream"
+                            "Authorization": "Bearer " + credentials.access_token
                         },
                         "verb": 'put'
                     },
@@ -588,7 +585,7 @@ router.get("/register-activity", function (req, res) {
             "commandLine": ['$(engine.path)\\accoreconsole.exe /i "$(args[DWGInput].path)" /s "$(settings[script].path)" /l ja-JP'],
             "parameters": {
                 "DWGInput": {
-                    "zip": true,
+                    "zip": false,
                     "ondemand": false,
                     "verb": "get",
                     "description": "Source drawing",
