@@ -15,12 +15,17 @@
 // DOES NOT WARRANT THAT THE OPERATION OF THE PROGRAM WILL BE
 // UNINTERRUPTED OR ERROR FREE.
 /////////////////////////////////////////////////////////////////////////////////
-var CLIENT_ID = 'zf99QjeGGbOwyEqzfUBMzskO1zag2fPP',
-    CLIENT_SECRET = 'gemClGo7m8oOetXJ',
-    BUCKET_KEY = 'das-japan-zf99qjeggbowyeqzfubmzsko1zag2fpp-transient',
+// <amoru Miyakojima
+//var CLIENT_ID = 'zf99QjeGGbOwyEqzfUBMzskO1zag2fPP',
+//    CLIENT_SECRET = 'gemClGo7m8oOetXJ',
+//    BUCKET_KEY = 'das-japan-zf99qjeggbowyeqzfubmzsko1zag2fpp-transient',
+// Toshiaki Isezaki
+var CLIENT_ID = 'nqpwqsDLFGkSO6LgA2mvaSXy5AeH5VSJ',
+    CLIENT_SECRET = 'T66cbb0737e68467',
+    BUCKET_KEY = 'das-japan-nqpwqsdlfgkso6lga2mvasxy5aeh5vdj-transient',
     DA4A_UQ_ID = 'PDFPlot',
-    DA4A_FQ_ID = 'zf99QjeGGbOwyEqzfUBMzskO1zag2fPP.PDFPlot+dev',
-    DA4A_ENGINE = 'Autodesk.AutoCAD+24_1',
+    DA4A_FQ_ID = 'nqpwqsDLFGkSO6LgA2mvaSXy5AeH5VSJ.PDFPlot+dev',
+    DA4A_ENGINE = 'Autodesk.AutoCAD+23_1',
     SOURCE_DWG = 'source.dwg',
     RESULT_PDF = 'result.pdf',
     VIEWABLE_PDF = '',
@@ -333,11 +338,14 @@ router.post("/process", function (req, res) {
                     },
                     "PDFOutput": {
                     //"Result": {
-                        "url": "urn:adsk.objects:os.object:" + BUCKET_KEY + "/" + RESULT_PDF,
+                        "url": "urn:adsk.objects:os.object:" + BUCKET_KEY + "/" + /*"test.dwg"*/ RESULT_PDF,
                         "headers": {
                             "Authorization": "Bearer " + credentials.access_token
                         },
                         "verb": 'put'
+                    },
+                    "adskDebug": {
+                        "uploadJobFolder": true
                     },
                     "onComplete": {
                         "verb": "post",
@@ -582,7 +590,7 @@ router.get("/register-activity", function (req, res) {
         var payload =
         {
             "id": DA4A_UQ_ID,
-            "commandLine": ['$(engine.path)\\accoreconsole.exe /i "$(args[DWGInput].path)" /s "$(settings[script].path)" /l ja-JP'],
+            "commandLine": ['$(engine.path)\\accoreconsole.exe /i "$(args[DWGInput].path)" /s "$(settings[script].path)"'],
             "parameters": {
                 "DWGInput": {
                     "zip": false,
@@ -597,12 +605,13 @@ router.get("/register-activity", function (req, res) {
                     "verb": "put",
                     "description": "putput PDF drawing",
                     "required": true,
-                    "localName": "result.pdf"
+                    "localName": /*"test.dwg"*/ RESULT_PDF
                 }
             },
             "settings": {
                 "script": {
                     "value": "_tilemode 0 -export _pdf _all result.pdf\n"
+                    //"value": '_tilemode 0 (command "exportlayout" "test.dwg")\n'
                 }
             },
             "engine": DA4A_ENGINE,
@@ -615,7 +624,8 @@ router.get("/register-activity", function (req, res) {
             url: uri,
             headers: {
                 'content-type': 'application/json',
-                'authorization': 'Bearer ' + credentials.access_token
+                'authorization': 'Bearer ' + credentials.access_token,
+                'x-ads-das-use-deprecated-engine': 'I acknowledge no support for ' + DA4A_ENGINE + ' is provided',
             },
             body: JSON.stringify(payload)
         }, function (error, activityres, body) {
