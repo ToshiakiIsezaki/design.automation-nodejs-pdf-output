@@ -128,7 +128,7 @@ $(document).on("click", "[id^='download']", function () {
     $.ajax({
         url: uri,
         type: 'GET',
-        //contentType: 'application/json'
+        contentType: 'text/plain'
     }).done(function (res) {
         apiStatus("DM");
         var link = document.createElement('a');
