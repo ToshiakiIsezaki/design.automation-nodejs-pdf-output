@@ -128,12 +128,12 @@ $(document).on("click", "[id^='download']", function () {
     $.ajax({
         url: uri,
         type: 'GET',
-        contentType: 'application/json'
+        //contentType: 'application/json'
     }).done(function (res) {
         apiStatus("DM");
         var link = document.createElement('a');
         //var downloadUrl = JSON.parse(res).signedUrl; // obsolete way
-        var downloadUrl = JSON.parse(res).downloadUrl;
+        var downloadUrl = res;//JSON.parse(res).downloadUrl;
         link.href = downloadUrl;
         link.click();
         setTimeout(apiStatus, 3000, "VR");
