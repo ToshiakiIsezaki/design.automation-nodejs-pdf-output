@@ -62,7 +62,7 @@ var bucketsApi = new ForgeSDK.BucketsApi(), // Buckets Client
     itemsApi = new ForgeSDK.ItemsApi(); // Items Client
 
 // Initialize the 2-legged oauth2 client
-var oAuth2TwoLegged = new ForgeSDK.AuthClientTwoLegged(CLIENT_ID, CLIENT_SECRET,
+var oAuth2TwoLegged = new ForgeSDK.AuthClientTwoLeggedV2(CLIENT_ID, CLIENT_SECRET,
     ['code:all', 'data:create', 'data:write', 'data:read', 'bucket:read', 'bucket:update', 'bucket:create'], true);
 
 /**
