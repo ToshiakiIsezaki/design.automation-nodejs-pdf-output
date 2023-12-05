@@ -593,7 +593,8 @@ router.get("/register-activity", function (req, res) {
         var payload =
         {
             "id": DA4A_UQ_ID,
-            "commandLine": ['$(engine.path)\\accoreconsole.exe /i "$(args[DWGInput].path)" /s "$(settings[script].path)"'],
+            "commandLine": ['$(engine.path)\\accoreconsole.exe /i "$(args[DWGInput].path)" /s "$(settings[prescript].path)"',
+                '$(engine.path)\\accoreconsole.exe /i "$(args[DWGInput].path)" /s "$(settings[script].path)"'],
             "parameters": {
                 "DWGInput": {
                     "zip": false,
@@ -612,6 +613,10 @@ router.get("/register-activity", function (req, res) {
                 }
             },
             "settings": {
+                "prescript": {
+                    "value": "-style STANDARD txt,extfont.shx 0 1 0 N N N\nQSAVE\n"
+                    //"value": '_tilemode 0 (command "exportlayout" "test.dwg")\n'
+                },
                 "script": {
                     "value": "_tilemode 0 -export _pdf _all result.pdf\n"
                     //"value": '_tilemode 0 (command "exportlayout" "test.dwg")\n'
