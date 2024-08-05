@@ -395,8 +395,8 @@ function onViewModel() {
         $("#regiactivity").prop("disabled", true);
     }
 
-    //var urn = "dXJuOmFkc2sub2JqZWN0czpvcy5vYmplY3Q6ZGFzLWphcGFuLXpmOTlxamVnZ2Jvd3llcXpmdWJtenNrbzF6YWcyZnBwLXRyYW5zaWVudC9BUFMucGRm";
-    var urn = "dXJuOmFkc2sub2JqZWN0czpvcy5vYmplY3Q6ZGFzLWphcGFuLW5xcHdxc2RsZmdrc282bGdhMm12YXN4eTVhZWg1dmRqLXBlcnNpc3RlbnQvJUUzJTgyJUJGJUUzJTgyJUE0JUUzJTgzJTg4JUUzJTgzJUFCLnBkZg";
+    var urn = "dXJuOmFkc2sub2JqZWN0czpvcy5vYmplY3Q6ZGFzLWphcGFuLXpmOTlxamVnZ2Jvd3llcXpmdWJtenNrbzF6YWcyZnBwLXRyYW5zaWVudC8lRTMlODIlQkYlRTMlODIlQTQlRTMlODMlODglRTMlODMlQUIucGRm";
+    //var urn = "dXJuOmFkc2sub2JqZWN0czpvcy5vYmplY3Q6ZGFzLWphcGFuLW5xcHdxc2RsZmdrc282bGdhMm12YXN4eTVhZWg1dmRqLXBlcnNpc3RlbnQvJUUzJTgyJUJGJUUzJTgyJUE0JUUzJTgzJTg4JUUzJTgzJUFCLnBkZg";
     initializeViewer(urn);
 }
 
