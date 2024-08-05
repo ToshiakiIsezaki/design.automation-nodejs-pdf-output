@@ -4,8 +4,8 @@
   "version": "1.0.1",
   "dependencies": {
     "date-utils": "^1.2.21",
-    "express": "^4.18.2",
-    "forge-apis": "^0.9.6",
+    "express": "^4.19.2",
+    "forge-apis": "^0.9.10",
     "form-data": "^2.5.1",
     "multer": "~1.2.0",
     "request": "^2.88.2",

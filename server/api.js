@@ -16,16 +16,17 @@
 // UNINTERRUPTED OR ERROR FREE.
 /////////////////////////////////////////////////////////////////////////////////
 // <amoru Miyakojima
-//var CLIENT_ID = 'zf99QjeGGbOwyEqzfUBMzskO1zag2fPP',
-//    CLIENT_SECRET = 'gemClGo7m8oOetXJ',
-//    BUCKET_KEY = 'das-japan-zf99qjeggbowyeqzfubmzsko1zag2fpp-transient',
+var CLIENT_ID = 'zf99QjeGGbOwyEqzfUBMzskO1zag2fPP',
+    CLIENT_SECRET = 'gemClGo7m8oOetXJ',
+    BUCKET_KEY = 'das-japan-zf99qjeggbowyeqzfubmzsko1zag2fpp-transient',
 // Toshiaki Isezaki
-var CLIENT_ID = 'nqpwqsDLFGkSO6LgA2mvaSXy5AeH5VSJ',
-    CLIENT_SECRET = 'T66cbb0737e68467',
-    BUCKET_KEY = 'das-japan-nqpwqsdlfgkso6lga2mvasxy5aeh5vdj-transient',
+//var CLIENT_ID = 'nqpwqsDLFGkSO6LgA2mvaSXy5AeH5VSJ',
+//    CLIENT_SECRET = 'T66cbb0737e68467',
+//    BUCKET_KEY = 'das-japan-nqpwqsdlfgkso6lga2mvasxy5aeh5vdj-transient',
     DA4A_UQ_ID = 'PDFPlot',
-    DA4A_FQ_ID = 'nqpwqsDLFGkSO6LgA2mvaSXy5AeH5VSJ.PDFPlot+dev',
-    DA4A_ENGINE = 'Autodesk.AutoCAD+23_1',
+//    DA4A_FQ_ID = 'nqpwqsDLFGkSO6LgA2mvaSXy5AeH5VSJ.PDFPlot+dev',
+    DA4A_FQ_ID = 'zf99QjeGGbOwyEqzfUBMzskO1zag2fPP.PDFPlot+dev',
+    DA4A_ENGINE = 'Autodesk.AutoCAD+25_0',
     SOURCE_DWG = 'source.dwg',
     RESULT_PDF = 'result.pdf',
     VIEWABLE_PDF = '',
@@ -593,7 +594,7 @@ router.get("/register-activity", function (req, res) {
         var payload =
         {
             "id": DA4A_UQ_ID,
-            "commandLine": ['$(engine.path)\\accoreconsole.exe /i "$(args[DWGInput].path)" /s "$(settings[prescript].path)"',
+            "commandLine": [/*'$(engine.path)\\accoreconsole.exe /i "$(args[DWGInput].path)" /s "$(settings[prescript].path)"',*/
                 '$(engine.path)\\accoreconsole.exe /i "$(args[DWGInput].path)" /s "$(settings[script].path)"'],
             "parameters": {
                 "DWGInput": {
@@ -613,10 +614,12 @@ router.get("/register-activity", function (req, res) {
                 }
             },
             "settings": {
+                /*
                 "prescript": {
                     "value": "-style STANDARD txt,extfont.shx 0 1 0 N N N\nQSAVE\n"
                     //"value": '_tilemode 0 (command "exportlayout" "test.dwg")\n'
                 },
+                */
                 "script": {
                     "value": "_tilemode 0 -export _pdf _all result.pdf\n"
                     //"value": '_tilemode 0 (command "exportlayout" "test.dwg")\n'
@@ -633,7 +636,7 @@ router.get("/register-activity", function (req, res) {
             headers: {
                 'content-type': 'application/json',
                 'authorization': 'Bearer ' + credentials.access_token,
-                'x-ads-das-use-deprecated-engine': 'I acknowledge no support for ' + DA4A_ENGINE + ' is provided',
+                //'x-ads-das-use-deprecated-engine': 'I acknowledge no support for ' + DA4A_ENGINE + ' is provided',
             },
             body: JSON.stringify(payload)
         }, function (error, activityres, body) {
