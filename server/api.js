@@ -15,7 +15,7 @@
 // DOES NOT WARRANT THAT THE OPERATION OF THE PROGRAM WILL BE
 // UNINTERRUPTED OR ERROR FREE.
 /////////////////////////////////////////////////////////////////////////////////
-// <amoru Miyakojima
+// Mamoru Miyakojima
 var CLIENT_ID = 'zf99QjeGGbOwyEqzfUBMzskO1zag2fPP',
     CLIENT_SECRET = 'gemClGo7m8oOetXJ',
     BUCKET_KEY = 'das-japan-zf99qjeggbowyeqzfubmzsko1zag2fpp-transient',
@@ -23,12 +23,16 @@ var CLIENT_ID = 'zf99QjeGGbOwyEqzfUBMzskO1zag2fPP',
 //var CLIENT_ID = 'nqpwqsDLFGkSO6LgA2mvaSXy5AeH5VSJ',
 //    CLIENT_SECRET = 'T66cbb0737e68467',
 //    BUCKET_KEY = 'das-japan-nqpwqsdlfgkso6lga2mvasxy5aeh5vdj-transient',
+    BASE_URL = 'https://developer.api.autodesk.com/da/us-east/v3';
+    //BASE_URL = 'https://developer.api.autodesk.com/preview.da/us-east/v3',
     DA4A_UQ_ID = 'PDFPlot',
 //    DA4A_FQ_ID = 'nqpwqsDLFGkSO6LgA2mvaSXy5AeH5VSJ.PDFPlot+dev',
     DA4A_FQ_ID = 'zf99QjeGGbOwyEqzfUBMzskO1zag2fPP.PDFPlot+dev',
-    DA4A_ENGINE = 'Autodesk.AutoCAD+25_0',
+    //DA4A_ENGINE = 'Autodesk.AutoCAD+24_2',// high resolution paper size
+    DA4A_ENGINE = 'Autodesk.AutoCAD+24_3',
     SOURCE_DWG = 'source.dwg',
     RESULT_PDF = 'result.pdf',
+    //RESULT_PDF = 'S-02 仕様図／詳細図 BZW-1216LBF-C+H,LC.pdf',
     VIEWABLE_PDF = '',
     VIEWABLE_URN = '',
     FILE_PATH = '',
@@ -64,7 +68,7 @@ var bucketsApi = new ForgeSDK.BucketsApi(), // Buckets Client
 
 // Initialize the 2-legged oauth2 client
 var oAuth2TwoLegged = new ForgeSDK.AuthClientTwoLeggedV2(CLIENT_ID, CLIENT_SECRET,
-    ['code:all', 'data:create', 'data:write', 'data:read', 'bucket:read', 'bucket:update', 'bucket:create'], true);
+    [/*'code:all',*/'data:create', 'data:write', 'data:read', 'bucket:read', 'bucket:update', 'bucket:create'], true);
 
 /**
  * General error handling method
@@ -194,9 +198,14 @@ var deleteBucket = function (bucketKey) {
     });
 };
 
-// Encode file address to urn
-function base64encode(str) {
-    return new Buffer(str).toString('base64');
+// Base64 Encode file address to urn
+function base64encode(id) {
+    return Buffer.from(id).toString('base64').replace(/=/g, '');
+}
+
+// URL Encode file address to urn
+function urlencode(id) {
+    return encodeURIComponent(id);
 }
 
 // Translate seed file to SVF file
@@ -321,7 +330,8 @@ router.post("/process", function (req, res) {
     oAuth2TwoLegged.authenticate().then(function (credentials) {
 
         createBucketIfNotExist(BUCKET_KEY).then(function (createBucketRes) {
-
+            console.log("-----");
+            console.log(encodeURIComponent("urn:adsk.objects:os.object:" + BUCKET_KEY + "/" + SOURCE_DWG));
             // Create WorkItem
             var payload =
             {
@@ -330,8 +340,13 @@ router.post("/process", function (req, res) {
                 "arguments": {
                     "DWGInput": {
                     //"HostDwg": {
-                        //"pathInZip": "8th floor.dwg", // parent drawing when zip
-                        "url": "urn:adsk.objects:os.object:" + BUCKET_KEY + "/" + SOURCE_DWG,
+                        //"pathInZip": "8th floor.dwg", // parent drawing when zip                       
+                        // ng //"url": "urn:adsk.objects:os.object:" + BUCKET_KEY + "/" + SOURCE_DWG,
+
+                        "url": "urn:adsk.objects:os.object:" + encodeURIComponent(BUCKET_KEY) + "/" + encodeURIComponent(SOURCE_DWG),
+                        // ng "url": "urn:adsk.objects:os.object:" + encodeURI(BUCKET_KEY) + "/" + encodeURI(SOURCE_DWG),
+
+                        // ng //"url":  encodeURIComponent("urn:adsk.objects:os.object:" + BUCKET_KEY + "/" + SOURCE_DWG),
                         "headers": {
                             "Authorization": "Bearer " + credentials.access_token
                         },
@@ -348,6 +363,7 @@ router.post("/process", function (req, res) {
                     "adskDebug": {
                         "uploadJobFolder": true
                     },
+                    //"adskMask": true,
                     "onComplete": {
                         "verb": "post",
                         "url": "http://forge-da4a-pdf-output.herokuapp.com/api/oncomplete"
@@ -355,7 +371,7 @@ router.post("/process", function (req, res) {
                 }
             };
 
-            var uri = "https://developer.api.autodesk.com/da/us-east/v3/workitems";
+            var uri = BASE_URL + "/workitems";
             request.post({
                 url: uri,
                 headers: {
@@ -365,6 +381,7 @@ router.post("/process", function (req, res) {
                 body: JSON.stringify(payload)
             }, function (error, workitemres, body) {
                 var data = JSON.stringify(workitemres);
+                console.log("*** POST WorkItems status = " + JSON.parse(data).statusCode);
                 if (JSON.parse(data).statusCode === 200) {
                     var id = JSON.parse(JSON.parse(data).body).id;
                     console.log(" WorkItem was created >> WorkItem Id :" + id);
@@ -413,7 +430,7 @@ router.get('/process-status/:id', function (req, res) {
 
     oAuth2TwoLegged.authenticate().then(function (credentials) {
 
-        var uri = "https://developer.api.autodesk.com/da/us-east/v3/workitems/" + workitemid;
+        var uri = BASE_URL + "/workitems/" + workitemid;
         request.get({
             url: uri,
             headers: {
@@ -539,7 +556,7 @@ router.get("/delete-activity", function (req, res) {
 
         console.log("**** Check existing Activity");
 
-        var uri = "https://developer.api.autodesk.com/da/us-east/v3/activities";
+        var uri = BASE_URL + "/activities";
         request.get({
             url: uri,
             headers: {
@@ -552,10 +569,10 @@ router.get("/delete-activity", function (req, res) {
                 var list = JSON.parse(JSON.parse(data).body).data;
                 for (let i = 0; i < list.length; i++) {
                     console.log(" " + list[i]);
-                    if (list[i] === DA4A_FQ_ID) {
+                    if (list[i] == DA4A_FQ_ID) {
                         console.log(" " + DA4A_FQ_ID + " Activity is already there");
 
-                        var uri = "https://developer.api.autodesk.com/da/us-east/v3/activities/" + DA4A_UQ_ID;
+                        var uri = BASE_URL + "/activities/" + DA4A_UQ_ID;
                         request.delete({
                             url: uri,
                             headers: {
@@ -571,7 +588,7 @@ router.get("/delete-activity", function (req, res) {
                         });
 
                     }
-                } 
+                }
             } else {
                 console.log("Error : " + error);
                 res.sendStatus(JSON.parse(data).statusCode);
@@ -593,9 +610,18 @@ router.get("/register-activity", function (req, res) {
         // Create Activity
         var payload =
         {
-            "id": DA4A_UQ_ID,
-            "commandLine": [/*'$(engine.path)\\accoreconsole.exe /i "$(args[DWGInput].path)" /s "$(settings[prescript].path)"',*/
-                '$(engine.path)\\accoreconsole.exe /i "$(args[DWGInput].path)" /s "$(settings[script].path)"'],
+                "id": DA4A_UQ_ID,
+/*
+            "commandLine": [
+                '$(engine.path)\\accoreconsole.exe /i "$(args[DWGInput].path)" /s "$(settings[prescript].path)" /recover',
+                '$(engine.path)\\accoreconsole.exe /i "$(args[DWGInput].path)" /s "$(settings[script].path) /recover"'
+            ],
+*/
+            "commandLine": [
+                '$(engine.path)\\accoreconsole.exe /i "$(args[DWGInput].path)" /s "$(settings[prescript].path)"',
+                '$(engine.path)\\accoreconsole.exe /i "$(args[DWGInput].path)" /s "$(settings[script].path)"'
+            ],
+            //"commandLine": ['$(engine.path)\\accoreconsole.exe /i "$(args[DWGInput].path)" /s "$(settings[script].path)"'],
             "parameters": {
                 "DWGInput": {
                     "zip": false,
@@ -614,15 +640,14 @@ router.get("/register-activity", function (req, res) {
                 }
             },
             "settings": {
-                /*
+                ///*
                 "prescript": {
-                    "value": "-style STANDARD txt,extfont.shx 0 1 0 N N N\nQSAVE\n"
-                    //"value": '_tilemode 0 (command "exportlayout" "test.dwg")\n'
+                    "value": "-style Standard txt.shx,extfont.shx 0 1 0 n n n qsave\n"
+                    //"value": "CHCP 932\n"
                 },
-                */
+                //*/
                 "script": {
-                    "value": "_tilemode 0 -export _pdf _all result.pdf\n"
-                    //"value": '_tilemode 0 (command "exportlayout" "test.dwg")\n'
+                    "value": "_tilemode 0 -export _pdf _all " + RESULT_PDF + "\n"
                 }
             },
             "engine": DA4A_ENGINE,
@@ -630,13 +655,13 @@ router.get("/register-activity", function (req, res) {
             "description": "PDF output"
         };
 
-        var uri = "https://developer.api.autodesk.com/da/us-east/v3/activities";
+        var uri = BASE_URL + "/activities";
         request.post({
             url: uri,
             headers: {
                 'content-type': 'application/json',
                 'authorization': 'Bearer ' + credentials.access_token,
-                //'x-ads-das-use-deprecated-engine': 'I acknowledge no support for ' + DA4A_ENGINE + ' is provided',
+                'x-ads-das-use-deprecated-engine': 'I acknowledge no support for ' + DA4A_ENGINE + ' is provided',
             },
             body: JSON.stringify(payload)
         }, function (error, activityres, body) {
@@ -649,10 +674,16 @@ router.get("/register-activity", function (req, res) {
                 var payload =
                 {
                     "version": 1,
-                    "id": "dev"
+                    "id": "dev",
+                    // Client ID/Nicknameの配列を指定する場合は、Client ID/Nicknameを渡すすべての APS アプリに、
+                    // 少なくとも 1 つの AppBundle、または Activity などの DA リソースがあることを確認する必要があります。
+                    "receiver": [ 
+                        "mDyW9ps2613NZ8AIaQVrllFYueRi6dwS", // Block Cleaner - DA4A
+                        "AjFukUWeRk05eA9XpH8Nnh62BzPD60mg"  // Table Fan Configurator - DA4A/M
+                    ]
                 };
 
-                var uri = "https://developer.api.autodesk.com/da/us-east/v3/activities/" + DA4A_UQ_ID + "/aliases";
+                var uri = BASE_URL + "/activities/" + DA4A_UQ_ID + "/aliases";
                 request.post({
                     url: uri,
                     headers: {

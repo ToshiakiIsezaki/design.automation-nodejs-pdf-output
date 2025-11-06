@@ -190,7 +190,7 @@ $(document).on("change", "[id^='data-form-drawing']", function () {
 
             // Set timer to repeat getting WorkItem status
             var startTime = new Date().getTime();
-            var timeout = 1000 * 60 * 5; // 5 minutes
+            var timeout = 1000 * 60 * 10; // 10 minutes
             var timer = setInterval(function () {
                 var dt = (new Date().getTime() - startTime) / timeout;
                 if (dt >= 1.0) {
@@ -301,7 +301,7 @@ $(document).on("change", "[id^='data-form-drawing']", function () {
 
                 }
 
-            }, 2000);
+            }, 5000); // per 5 sec
 
         }).fail(function (jqXHR, textStatus, errorThrown) {
             $("#loaders").css('visibility', 'hidden');
